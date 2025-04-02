@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,15 @@ import React, { useState } from "react";
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
+
+  console.log(searchQuery);
+
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+    const valueProduct = e.target.searchProduct.value;
+    setSearchQuery(valueProduct);
+  };
+
   const trendingProducts = [
     {
       id: 1,
@@ -70,20 +80,21 @@ const Home = () => {
 
             {/* Search Bar */}
             <div className="relative max-w-2xl mx-auto">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Search for products..."
-                    className="pl-10 h-12"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <Button size="lg" className="h-12">
-                  Compare Prices
-                </Button>
+              <div className="">
+                <form onSubmit={onSubmit} className="flex gap-2 w-full">
+                  <div className="relative w-full">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Search for products..."
+                      className="pl-10 h-12 border border-gray-400"
+                      name="searchProduct"
+                    />
+                  </div>
+                  <Button type="submit" size="lg" className="h-12">
+                    Search Product
+                  </Button>
+                </form>
               </div>
             </div>
 
