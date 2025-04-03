@@ -43,8 +43,11 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-gray-900 font-bold text-xl">
-              GLASSMORPH
+            <Link
+              href="/"
+              className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500"
+            >
+              PricePanda
             </Link>
           </div>
 
