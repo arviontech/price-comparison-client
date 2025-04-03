@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import Container from "./container/Container";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,9 +12,7 @@ const Navbar = () => {
   // Navigation items - easily customizable
   const navItems = [
     { name: "Home", link: "/" },
-    { name: "About", link: "/about" },
-    { name: "Portfolio", link: "/portfolio" },
-    { name: "Contact", link: "/contact" },
+    { name: "Prducts", link: "/products" },
   ];
 
   // Use useCallback to memoize this function
@@ -33,65 +32,67 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b broder-gray-200 ${
         isScrolled
           ? "bg-white/10 backdrop-blur-md border-b border-white/20 shadow-lg"
           : "bg-white/5 backdrop-blur-sm"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link
-              href="/"
-              className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500"
-            >
-              PricePanda
-            </Link>
-          </div>
+      <Container>
+        <div>
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <Link
+                href="/"
+                className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500"
+              >
+                PricePanda
+              </Link>
+            </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {navItems.map((item, index) => (
-                <div key={index} className="relative group">
-                  <Link
-                    href={item.link}
-                    className="text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    {item.name}
-                  </Link>
-                </div>
-              ))}
+            {/* Desktop Navigation */}
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-4">
+                {navItems.map((item, index) => (
+                  <div key={index} className="relative group">
+                    <Link
+                      href={item.link}
+                      className="text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                    >
+                      {item.name}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="hidden md:block">
+              <Link
+                href="/get-started"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity inline-block"
+              >
+                Get Started
+              </Link>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={toggleMenu}
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-900 hover:text-gray-700"
+              >
+                {isMenuOpen ? (
+                  <X className="block h-6 w-6" />
+                ) : (
+                  <Menu className="block h-6 w-6" />
+                )}
+              </button>
             </div>
           </div>
-
-          {/* CTA Button */}
-          <div className="hidden md:block">
-            <Link
-              href="/get-started"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity inline-block"
-            >
-              Get Started
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-900 hover:text-gray-700"
-            >
-              {isMenuOpen ? (
-                <X className="block h-6 w-6" />
-              ) : (
-                <Menu className="block h-6 w-6" />
-              )}
-            </button>
-          </div>
         </div>
-      </div>
+      </Container>
 
       {/* Mobile menu */}
       {isMenuOpen && (
