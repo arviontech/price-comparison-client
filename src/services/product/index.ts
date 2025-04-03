@@ -2,14 +2,16 @@
 
 import axiosInstance from "@/lib/axiosInstance";
 
-export const getProducts = async (payload: string) => {
+export const getProducts = async (searchQuery?: string) => {
   try {
     const { data } = await axiosInstance.get("/products", {
-      params: payload,
+      params: { searchTerm: searchQuery }, // Properly structured params
     });
 
-    return data;
+    return data || [];
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching products:", error);
+
+    return [];
   }
 };

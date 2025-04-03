@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -11,14 +12,25 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Input } from "@/components/ui/input";
+import { useGetProduct } from "@/hooks/Product/product.hook";
 import { Search, ShoppingBag, Star, TrendingUp } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { data, isPending, isSuccess } = useGetProduct(searchQuery);
 
-  console.log(searchQuery);
+  useEffect(() => {
+    if (isSuccess) {
+      setSearchQuery("");
+    }
+  }, [isSuccess]);
+  console.log(data);
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
 
   const onSubmit = (e: any) => {
     e.preventDefault();
@@ -26,41 +38,6 @@ const Home = () => {
     setSearchQuery(valueProduct);
   };
 
-  const trendingProducts = [
-    {
-      id: 1,
-      name: "MacBook Pro M3",
-      image:
-        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500",
-      priceRange: "$1,299 - $2,299",
-      stores: 8,
-    },
-    {
-      id: 2,
-      name: "Sony WH-1000XM5",
-      image:
-        "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500",
-      priceRange: "$348 - $399",
-      stores: 12,
-    },
-    {
-      id: 3,
-      name: "iPhone 15 Pro",
-      image:
-        "https://images.unsplash.com/photo-1696446702239-e76522425e3f?w=500",
-      priceRange: "$999 - $1,199",
-      stores: 15,
-    },
-  ];
-
-  const categories = [
-    { name: "Electronics", icon: "💻" },
-    { name: "Fashion", icon: "👕" },
-    { name: "Home & Garden", icon: "🏡" },
-    { name: "Sports", icon: "⚽" },
-    { name: "Beauty", icon: "💄" },
-    { name: "Books", icon: "📚" },
-  ];
   return (
     <main className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -117,65 +94,127 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">
-            Popular Categories
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((category) => (
-              <Card
-                key={category.name}
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-              >
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                  <span className="text-4xl mb-3">{category.icon}</span>
-                  <h3 className="font-medium">{category.name}</h3>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Trending Products Section */}
+      {/* Product Results Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">
-            Trending Products
-          </h2>
-          <Carousel className="max-w-5xl mx-auto">
-            <CarouselContent>
-              {trendingProducts.map((product) => (
-                <CarouselItem
-                  key={product.id}
-                  className="md:basis-1/2 lg:basis-1/3"
-                >
-                  <Card className="mx-2">
-                    <CardContent className="p-4">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        width={500}
-                        height={500}
-                        className="w-full h-48 object-cover rounded-md mb-4"
-                      />
-                      <h3 className="font-medium mb-2">{product.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-1">
-                        Price Range: {product.priceRange}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Available at {product.stores} stores
-                      </p>
+          {data.data?.length > 0 ? (
+            <>
+              <h2 className="text-3xl font-bold mb-8 text-center">
+                Search Results
+              </h2>
+
+              {/* Product Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {data.data?.map((product) => (
+                  <Card
+                    key={product._id}
+                    className="overflow-hidden transition-all duration-300 hover:shadow-lg"
+                  >
+                    <div className="relative h-64 w-full bg-gray-100">
+                      {product.productImage.startsWith("data:") ? (
+                        // Handle base64 images
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <img
+                            src={product.productImage}
+                            alt={product.productTitle}
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+                      ) : (
+                        // Handle URL images
+                        <Image
+                          src={product.productImage}
+                          alt={product.productTitle}
+                          className="object-contain"
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      )}
+                    </div>
+                    <CardContent className="p-5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                          {product.source}
+                        </span>
+                      </div>
+                      <h3 className="font-semibold text-lg line-clamp-2 mb-2">
+                        {product.productTitle}
+                      </h3>
+                      <div className="flex justify-between items-center mt-4">
+                        <Button variant="outline" className="w-full">
+                          View Details
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+                ))}
+              </div>
+            </>
+          ) : searchQuery ? (
+            <div className="text-center py-12">
+              <h3 className="text-xl font-medium">
+                No products found matching "{searchQuery}"
+              </h3>
+              <p className="text-muted-foreground mt-2">
+                Try a different search term or browse our featured products
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {/* Featured Products Section */}
+              <div>
+                <h2 className="text-3xl font-bold mb-8 text-center">
+                  Featured Products
+                </h2>
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {data?.data?.slice(0, 6)?.map((product) => (
+                      <CarouselItem
+                        key={product._id}
+                        className="md:basis-1/2 lg:basis-1/3"
+                      >
+                        <Card className="overflow-hidden">
+                          <div className="relative h-64 w-full bg-gray-100">
+                            {product.productImage.startsWith("data:") ? (
+                              // Handle base64 images
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <img
+                                  src={product.productImage}
+                                  alt={product.productTitle}
+                                  className="max-h-full max-w-full object-contain"
+                                />
+                              </div>
+                            ) : (
+                              // Handle URL images
+                              <Image
+                                src={product.productImage}
+                                alt={product.productTitle}
+                                className="object-contain"
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              />
+                            )}
+                          </div>
+                          <CardContent className="p-5">
+                            <h3 className="font-semibold text-lg line-clamp-2 mb-2">
+                              {product.productTitle}
+                            </h3>
+                            <div className="flex items-center gap-2 mb-3">
+                              <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                                {product.source}
+                              </span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-2" />
+                  <CarouselNext className="right-2" />
+                </Carousel>
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </main>
